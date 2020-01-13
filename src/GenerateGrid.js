@@ -21,12 +21,12 @@ const generateGrid = size => {
 
   // add size/3 settlements
 
-  // for (let i = 0; i < size / 4; i++) {
-  let x = rand(0, size - 1)
-  let y = rand(0, size - 1)
-  let cell = grid[getPos(x, y)]
-  grid[getPos(x, y)] = { ...cell, cellType: CellTypes.Settlement }
-  // }
+  for (let i = 0; i < size / 4; i++) {
+    let x = rand(0, size - 1)
+    let y = rand(0, size - 1)
+    let cell = grid[getPos(x, y)]
+    grid[getPos(x, y)] = { ...cell, cellType: CellTypes.Settlement }
+  }
 
   // add at least 1 food next to a settlement.
   // find a settlement, pick a random direction that leads to another cell, place food.
