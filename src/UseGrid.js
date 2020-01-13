@@ -149,7 +149,7 @@ function useGrid (size) {
   ).length
   if (numFoodActivated === 0 && harbours === 0) {
     notes.push('food may be hard to come by.')
-  } else {
+  } else if (numFoodActivated > 0){
     notes.push(`bountiful food x${numFoodActivated}`)
   }
 
