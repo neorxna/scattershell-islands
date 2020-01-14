@@ -17,17 +17,17 @@ function Grid (props) {
 
   return (
     <>
-      <h2>{remainingActives} remaining</h2>
+      <h2>{remainingActives}</h2>
       <table>
         {gridByRow.map((row, colN) => {
           return (
             <tr>
               {row.map((cell, rowN) => {
                 return (
-                  <td>
                     <Cell
                       cellType={cell.cellType}
                       activated={cell.activated}
+                      harbour={cell.harbour}
                       canActivate={
                         remainingActives > 0 &&
                         (remainingActives === islandSize ||
@@ -40,8 +40,8 @@ function Grid (props) {
                       onDeactivate={() =>
                         updateCell(rowN, colN, { activated: false })
                       }
+                      noneActivated={remainingActives === islandSize}
                     />
-                  </td>
                 )
               })}
             </tr>

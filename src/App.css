@@ -2,49 +2,85 @@
   margin-left: 4em;
 }
 table {
-  margin: 1em;
+  margin: 0px;
   padding: 1em;
   font-size: 2em;
   border-collapse: collapse;
+  user-select: none;
 }
 table a {
   text-decoration: none;
 }
 
 table td {
-  padding: .4em .6em;
+  padding: .4em;
   padding-left: 1em;
-  width: .8em;
+  width: 1.4em;
   border: 1px solid #999;
 }
 
-.cell--activated {
-  font-weight: bold;
-  cursor: pointer;
+.cell--harbour { background-color: #a8d1ff; }
+
+/*.harbour {
+  border-style: solid;
+  width: 0;
+  height: 0;
+  opacity: 1;
+  position: absolute;
 }
 
+.harbour-ur {
+  border-width: 0 1em 1em 0px;
+  border-color: transparent #5ba9ff transparent transparent;
+}
+.harbour-ul {
+  border-width: 1em 1em 0px 0px;
+  border-color: #5ba9ff transparent transparent transparent;
+}
+.harbour-dr {
+  border-width: 0px 0px 1em 1em;
+  border-color: transparent transparent #5ba9ff transparent;
+}
+.harbour-dl {
+  border-width: 1em 0em 0px 1em;
+  border-color: transparent transparent transparent #5ba9ff;
+}*/
 
-.cell--unactivated {
-  color: blue;
+td.cell--activated {
+  font-weight: bold;
   cursor: pointer;
+  background-color: #134e13;
+  color: white;
+} 
 
+td.cell--unactivated {
+  cursor: pointer;
+}
+td.cell--blocked {
+  cursor: not-allowed;
+}
+
+.cell--dim {
+  color: #999;
+}
+
+.cell--harbour.cell--unactivatable {
+ /* color: white; */
 }
 
 .cell--unactivatable {
   color: #999;
   cursor: not-allowed;
-
 }
 
-.cell--undeactivatable {
-  color: blue;
+.cell--settlement { 
   font-weight: bold;
-  cursor: not-allowed;
 }
 
 .info {
+  margin-top: 1em;
   font-family: monospace;
-  margin-left: 2.4em;
+  margin-left: 0px;
   font-size: 1.4em
 }
 .messages, .notes {

@@ -1,5 +1,6 @@
 import { CellTypes } from './Properties'
 import { GridPositions } from './Utils'
+import * as Poisson from 'poisson-disk-sampling'
 
 const randomChoice = arr => {
   let index = Math.floor(Math.random() * arr.length)
@@ -56,30 +57,60 @@ const generateGrid = size => {
         x => x != undefined && x.cellType === CellTypes.Undecided
       )
       let pick = randomChoice(candidates)
-      walk.push(pick)
+      if (pick != undefined) walk.push(pick)
     }
     let head = walk[walk.length - 1]
     grid[head.pos] = { ...head, cellType: CellTypes.Materials }
   }
 
   // for size=8, do a random n-manhattan walk from each settlement, where n=size-2, place a mountain.
-  if (size === 8) {
+  if (size > 5) {
     let walk = [grid[sPos]] // start at sPos
     while (walk.length < 6) {
       let head = walk[walk.length - 1]
       let hPos = head.pos
       let candidates = [up(hPos), down(hPos), left(hPos), right(hPos)].filter(
-        x => x != undefined && x.cellType === CellTypes.Undecided
-        // &&
-        // walk.filter(w => w.pos === x.pos).length === 0
+        x =>
+          x != undefined &&
+          x.cellType === CellTypes.Undecided &&
+          walk.filter(w => w.pos === x.pos).length === 0
       )
       let pick = randomChoice(candidates)
-      walk.push(pick)
+      if (pick != undefined) walk.push(pick)
+      else break
     }
     let head = walk[walk.length - 1]
     grid[head.pos] = { ...head, cellType: CellTypes.Mountain }
   }
 
+  console.log('starting poisson...')
+
+  const poisson = new Poisson([size, size], size / 10)
+  poisson
+    .fill()
+    .map(point => getPos(Math.round(point[0]), Math.round(point[1])))
+    .forEach(pos => {
+      if (grid[pos] && grid[pos].cellType === CellTypes.Undecided) {
+        grid[pos].cellType = randomChoice([
+          CellTypes.Grass,
+          CellTypes.Mountain,
+          CellTypes.Lagoon,
+          CellTypes.Desert
+        ])
+      }
+    })
+
+  grid.forEach(cell => {
+    if (cell.cellType === CellTypes.Undecided) {
+      cell.cellType = randomChoice([
+        CellTypes.Food,
+        CellTypes.Materials,
+        CellTypes.Undecided
+      ])
+    }
+  })
+
+  console.log('generated grid', grid)
   return grid
 }
 

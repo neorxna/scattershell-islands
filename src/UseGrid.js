@@ -46,6 +46,7 @@ const checkConnected = (grid, size) => {
 }
 
 function useGrid (size) {
+  //  for (let i = 0; i < 100; i++) { generateGrid(size)}
   const [grid, setGrid] = useState(() => generateGrid(size))
 
   const gridByRow = grid.reduce(
@@ -105,12 +106,36 @@ function useGrid (size) {
   /* Message conditions */
   let messages = []
 
+  const { up, down, left, right } = GridPositions(grid, size)
+
   const oneSettlementActivated =
     grid.filter(
       cell => cell.activated && cell.cellType === CellTypes.Settlement
-    ).length === 1
-  if (oneSettlementActivated) messages.push('✔️ one settlement')
-  else messages.push(`need one settlement (${CellTypes.Settlement})`)
+    ).length > 0
+  if (oneSettlementActivated) messages.push('✔ at least one settlement')
+  else messages.push(`need settlement (${CellTypes.Settlement})`)
+
+  if (size > 2) {
+    // all settlements must be adjacent to two activated cells
+    let settlements = grid.filter(
+      cell => cell.activated && cell.cellType === CellTypes.Settlement
+    )
+    let allHaveAdjacent =
+      settlements.filter(s => {
+        const activatedNeighbours = [
+          up(s.pos),
+          down(s.pos),
+          left(s.pos),
+          right(s.pos)
+        ].filter(n => n && n.activated)
+        return activatedNeighbours.length > 1
+      }).length === settlements.length && settlements.length > 0
+    if (allHaveAdjacent) {
+      messages.push('✔️ settlements have at least two neighbours')
+    } else if (settlements.length > 0) {
+      messages.push('settlements need at least two neighbours')
+    }
+  }
 
   if (size === 8) {
     const mountainActivated =
@@ -127,17 +152,33 @@ function useGrid (size) {
 
   // how many non-activated cells are adjacent to more than one activated cell?
 
-  const { up, down, left, right } = GridPositions(grid, size)
-  const harbours = grid.filter(cell => {
-    const neighbours = [
-      up(cell.pos),
-      down(cell.pos),
-      left(cell.pos),
-      right(cell.pos)
-    ]
-    const activatedNeighbours = neighbours.filter(n => n && n.activated)
-    return !cell.activated && activatedNeighbours.length > 1
-  }).length
+  useEffect(
+    () => {
+      setGrid(grid =>
+        grid.map(cell => {
+          const { up, down, left, right } = GridPositions(grid, size)
+          const neighbours = [
+            ['u', up(cell.pos)],
+            ['d', down(cell.pos)],
+            ['l', left(cell.pos)],
+            ['r', right(cell.pos)]
+          ]
+          const activatedNeighbours = neighbours.filter(
+            n => n[1] && n[1].activated
+          )
+          return !cell.activated && activatedNeighbours.length > 1
+            ? {
+              ...cell,
+              harbour: activatedNeighbours.reduce((str, n) => str + n[0], '')
+            }
+            : { ...cell, harbour: false }
+        })
+      )
+    },
+    [grid.filter(c => c.activated).length]
+  )
+
+  const harbours = grid.filter(c => c.harbour).length
   if (harbours > 0) {
     notes.push(
       `${harbours} harbour${harbours > 1 ? 's' : ''} (fishing possible)`
@@ -149,7 +190,7 @@ function useGrid (size) {
   ).length
   if (numFoodActivated === 0 && harbours === 0) {
     notes.push('food may be hard to come by.')
-  } else if (numFoodActivated > 0){
+  } else if (numFoodActivated > 0) {
     notes.push(`bountiful food x${numFoodActivated}`)
   }
 
@@ -161,6 +202,16 @@ function useGrid (size) {
   } else {
     notes.push(`bountiful materials x${numMaterialsActivated}`)
   }
+
+  const numGrasslands = grid.filter(
+    cell => cell.activated && cell.cellType === CellTypes.Grass
+  ).length
+  if (numGrasslands > 0) notes.push(`grasslands x${numGrasslands}`)
+
+  const numLagoons = grid.filter(
+    cell => cell.activated && cell.cellType === CellTypes.Lagoon
+  ).length
+  if (numLagoons > 0) notes.push(`lagoon x${numLagoons}`)
 
   return {
     grid,

@@ -3,7 +3,7 @@ const CellTypes = {
   Food: '🌱',
   Materials: '🛠️',
   Settlement: '📌',
-  Grass: '🍃',
+  Grass: '🌲',
   Lagoon: '💧',
   Desert: '🌵',
   Mountain: '⛰️'

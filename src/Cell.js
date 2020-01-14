@@ -1,4 +1,5 @@
 import React from 'react'
+import { CellTypes } from './Properties'
 
 function Cell (props) {
   const {
@@ -6,42 +7,44 @@ function Cell (props) {
     onDeactivate,
     activated,
     cellType,
+    harbour,
     canActivate,
-    canDeactivate
+    canDeactivate,
+    noneActivated
   } = props
 
   const cellView = cellType
 
-  const activatedView = canDeactivate ? (
-    <a
-      className={'cell--activated'}
-      href='#'
-      onClick={e => {
+  const blocked = (!activated && !canActivate) || (activated && !canDeactivate)
+  const click = blocked
+    ? {}
+    : {
+      onClick: e => {
         e.preventDefault()
-        onDeactivate()
-      }}
-    >
-      {cellView}
-    </a>
-  ) : (
-    <span className={'cell--undeactivatable'}>{cellView}</span>
-  )
-  const unactivatedView = canActivate ? (
-    <a
-      className={'cell--unactivated'}
-      href='#'
-      onClick={e => {
-        e.preventDefault()
-        onActivate()
-      }}
-    >
-      {cellView}
-    </a>
-  ) : (
-    <span className={'cell--unactivatable'}>{cellView}</span>
-  )
+        if (activated) onDeactivate()
+        else onActivate()
+      }
+    }
 
-  return activated ? activatedView : unactivatedView
+  return (
+    <td
+      className={
+        (activated ? 'cell--activated' : 'cell--unactivated') +
+        (blocked ? ' cell--blocked' : '') +
+        (!canActivate ? ' cell--unactivatable' : '') +
+        (cellType === CellTypes.Settlement ? ' cell--settlement' : '') +
+        (cellType !== CellTypes.Settlement && noneActivated
+          ? ' cell--dim'
+          : '') +
+        (harbour ? ' cell--harbour' : '')
+      }
+      {...click}
+    >
+      {harbour && <div className={`harbour harbour-${harbour}`} />}
+
+      {cellView}
+    </td>
+  )
 }
 
 export { Cell }
