@@ -1,77 +1,82 @@
 import { Cell } from './Cell'
 import { useGrid } from './UseGrid'
-import React from 'react'
+import React, { useState } from 'react'
 
 function Grid (props) {
   const { islandSize } = props
   const {
     gridByRow,
     remainingActives,
+    noneActivated,
     updateCell,
-    cellHasActivatedNeighbour,
     cellCanDeactivate,
+    cellCanActivate,
     clearGrid,
     messages,
     notes
   } = useGrid(islandSize)
 
-  return (
-    <>
-      <h2>{remainingActives}</h2>
-      <table>
-        {gridByRow.map((row, colN) => {
-          return (
-            <tr>
-              {row.map((cell, rowN) => {
-                return (
-                    <Cell
-                      cellType={cell.cellType}
-                      activated={cell.activated}
-                      harbour={cell.harbour}
-                      canActivate={
-                        remainingActives > 0 &&
-                        (remainingActives === islandSize ||
-                          cellHasActivatedNeighbour(rowN, colN))
-                      }
-                      canDeactivate={cellCanDeactivate(rowN, colN)}
-                      onActivate={() =>
-                        updateCell(rowN, colN, { activated: true })
-                      }
-                      onDeactivate={() =>
-                        updateCell(rowN, colN, { activated: false })
-                      }
-                      noneActivated={remainingActives === islandSize}
-                    />
-                )
-              })}
-            </tr>
-          )
-        })}
-      </table>
+  const [dragging, setDragging] = useState(false)
 
-      <div className={'info'}>
-        <a
-          href='#'
-          onClick={e => {
-            e.preventDefault()
-            clearGrid()
-          }}
-        >
-          clear
-        </a>
-        <ul className={'messages'}>
-          {messages.map((message, i) => (
-            <li key={`${message}${i}`}>{message}</li>
-          ))}
-        </ul>
-        {notes.length > 0 && '-'}
-        <ul className={'notes'}>
-          {notes.map((note, i) => (
-            <li key={`${note}${i}`}>{note}</li>
-          ))}
-        </ul>
+  return (
+    <div className={'game-container'}>
+      <div className={'grid-container'}>
+        <h2>{remainingActives}</h2>
+        <div className={'table-container'}>
+          <table>
+            {gridByRow.map((row, colN) => {
+              return (
+                <tr>
+                  {row.map((cell, rowN) => {
+                    return (
+                      <Cell
+                        cellType={cell.cellType}
+                        activated={cell.activated}
+                        harbour={cell.harbour}
+                        canActivate={cellCanActivate(rowN, colN)}
+                        canDeactivate={cellCanDeactivate(rowN, colN)}
+                        onActivate={() =>
+                          updateCell(rowN, colN, { activated: true })
+                        }
+                        onDeactivate={() =>
+                          updateCell(rowN, colN, { activated: false })
+                        }
+                        noneActivated={noneActivated}
+                        allActivated={remainingActives === 0}
+                        dragging={dragging}
+                        setDragging={setDragging}
+                      />
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </table>
+        </div>
+
+        <div className={'info'}>
+          <ul className={'messages'}>
+            {messages.map((message, i) => (
+              <li key={`${i}${new Date().getTime()}`}>{message}</li>
+            ))}
+          </ul>
+          <ul className={'notes'}>
+            {notes.map((note, i) => (
+              <li key={`${i}${new Date().getTime()}`}>{note}</li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </>
+      <a
+        href='#'
+        onClick={e => {
+          e.preventDefault()
+          clearGrid()
+        }}
+      >
+        restart
+      </a>
+    </div>
   )
 }
 

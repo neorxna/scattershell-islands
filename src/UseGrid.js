@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CellTypes } from './Properties'
 import { generateGrid } from './GenerateGrid'
 import { GridPositions } from './Utils'
+import { ResourceTypes } from './scattershell-common/Resources'
 
 const countActivated = grid =>
   grid.reduce((acc, cell) => acc + (cell.activated ? 1 : 0), 0)
@@ -46,7 +47,7 @@ const checkConnected = (grid, size) => {
 }
 
 function useGrid (size) {
-  //  for (let i = 0; i < 100; i++) { generateGrid(size)}
+  // for (let i = 0; i < 100; i++) { generateGrid(size); }
   const [grid, setGrid] = useState(() => generateGrid(size))
 
   const gridByRow = grid.reduce(
@@ -59,7 +60,9 @@ function useGrid (size) {
     [[]]
   )
 
-  const remainingActives = size - countActivated(grid)
+  const maxActives = size + Math.floor(size / 2)
+  const remainingActives = maxActives - countActivated(grid)
+  const noneActivated = remainingActives === maxActives 
 
   const getPos = (x, y) => y * size + x
 
@@ -90,6 +93,10 @@ function useGrid (size) {
     }
   }
 
+  const cellCanActivate = (x, y) =>
+    remainingActives > 0 &&
+    (noneActivated || cellHasActivatedNeighbour(x, y))
+
   const cellCanDeactivate = (x, y) => {
     return checkValid(x, y, { activated: false }, grid, true)
   }
@@ -112,8 +119,31 @@ function useGrid (size) {
     grid.filter(
       cell => cell.activated && cell.cellType === CellTypes.Settlement
     ).length > 0
-  if (oneSettlementActivated) messages.push('✔ at least one settlement')
-  else messages.push(`need settlement (${CellTypes.Settlement})`)
+  const lagoonWithFourNeighbours =
+    grid.filter(cell => {
+      if (cell.activated && cell.cellType === CellTypes.Lagoon) {
+        const activatedNeighbours = [
+          up(cell.pos),
+          down(cell.pos),
+          left(cell.pos),
+          right(cell.pos)
+        ].filter(n => n && n.activated)
+        if (activatedNeighbours.length === 4) return true
+      } else {
+        return false
+      }
+    }).length > 0
+
+  if (oneSettlementActivated || lagoonWithFourNeighbours) {
+    if (oneSettlementActivated) messages.push('✔ settlement')
+    if (lagoonWithFourNeighbours) messages.push('✔ lagoon with four neighbours')
+  } else {
+    messages.push(
+      `need settlement (${CellTypes.Settlement})${
+        size > 2 ? ' or lagoon (💧) with four neighbours' : ''
+      }`
+    )
+  }
 
   if (size > 2) {
     // all settlements must be adjacent to two activated cells
@@ -131,7 +161,7 @@ function useGrid (size) {
         return activatedNeighbours.length > 1
       }).length === settlements.length && settlements.length > 0
     if (allHaveAdjacent) {
-      messages.push('✔️ settlements have at least two neighbours')
+      messages.push('✔ settlements have at least two neighbours')
     } else if (settlements.length > 0) {
       messages.push('settlements need at least two neighbours')
     }
@@ -142,7 +172,7 @@ function useGrid (size) {
       grid.filter(
         cell => cell.activated && cell.cellType === CellTypes.Mountain
       ).length > 0
-    if (mountainActivated) messages.push('✔️ at least one mountain')
+    if (mountainActivated) messages.push('️✔ at least one mountain')
     else messages.push(`need mountain (${CellTypes.Mountain})`)
   }
 
@@ -180,11 +210,10 @@ function useGrid (size) {
 
   const harbours = grid.filter(c => c.harbour).length
   if (harbours > 0) {
-    notes.push(
-      `${harbours} harbour${harbours > 1 ? 's' : ''} (fishing possible)`
-    )
+    notes.push(`${harbours} fishing harbour${harbours > 1 ? 's' : ''}`)
   }
 
+  /*
   const numFoodActivated = grid.filter(
     cell => cell.activated && cell.cellType === CellTypes.Food
   ).length
@@ -212,14 +241,34 @@ function useGrid (size) {
     cell => cell.activated && cell.cellType === CellTypes.Lagoon
   ).length
   if (numLagoons > 0) notes.push(`lagoon x${numLagoons}`)
+*/
+
+  let stuff = {}
+  grid.forEach(cell => {
+    if (cell.activated && cell.contains && cell.contains.length > 0) {
+      cell.contains.forEach(
+        item => (stuff[item] = stuff[item] ? stuff[item] + 1 : 1)
+      )
+    }
+  })
+
+  if (Object.entries(stuff).length > 0 && harbours > 0) {
+    notes.push(<br />)
+  }
+
+  for (let [thing, num] of Object.entries(stuff)) {
+    notes.push(`${thing} ${num > 1 ? `x${num}` : ''}`)
+  }
 
   return {
     grid,
     gridByRow,
     checkConnected,
     remainingActives,
+    noneActivated,
     updateCell,
     cellHasActivatedNeighbour,
+    cellCanActivate,
     cellCanDeactivate,
     clearGrid,
     messages,

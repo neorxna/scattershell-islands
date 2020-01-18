@@ -1,25 +1,33 @@
 .App {
-  margin-left: 4em;
+  margin: 4em;
+  font-family: monospace;
+
 }
+
 table {
-  margin: 0px;
+  flex: 0;
+  margin-left: 1em;
   padding: 1em;
   font-size: 2em;
   border-collapse: collapse;
   user-select: none;
 }
-table a {
-  text-decoration: none;
+
+.table-container {
+  /*min-width: 640px;*/
 }
+
 
 table td {
   padding: .4em;
   padding-left: 1em;
   width: 1.4em;
-  border: 1px solid #999;
+  border: 1px solid #eee;
 }
 
-.cell--harbour { background-color: #a8d1ff; }
+.cell--harbour { color: #1081ff !important; background-color: #a8d1ff; }
+
+.cell--ocean { color: #1081ff !important; background-color: #5ca9ff; }
 
 /*.harbour {
   border-style: solid;
@@ -77,15 +85,54 @@ td.cell--blocked {
   font-weight: bold;
 }
 
-.info {
-  margin-top: 1em;
-  font-family: monospace;
-  margin-left: 0px;
-  font-size: 1.4em
+.grid-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1em;
 }
-.messages, .notes {
-list-style-type: none;
-margin: 1em 0px;
+.game-container {
+  margin-bottom: 8em;
+}
+
+.game-container>a{
+  margin-left: 2em;
+}
+
+.info {
+}
+
+.grid-container h2 {
+  position: absolute;
+  left: 1em;
+  padding: 0px;
+  margin: 0px;
+  font-size: 2em;
+}
+
+.info {
 padding: 0px;
+display: flex; 
+flex-direction: row;
+}
+
+.messages, .notes {
+  margin: 0px;
+  font-size: 1.4em;
+  list-style-type: none;
+}
+
+.messages li{
+  margin-bottom: 1em;
+}
+
+.messages {
+  min-width: 16em;
+  flex: 0;
+}
+
+.notes {
+  flex: 1;
+  font-style: italic;
+  color: #999;
 }
 

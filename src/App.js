@@ -7,11 +7,8 @@ function App () {
   return (
     <div className='App'>
       {<Grid islandSize={IslandSizes.Tiny} />}
-      <hr />
       {<Grid islandSize={IslandSizes.Small} />}
-      <hr />
       {<Grid islandSize={IslandSizes.Medium} />}
-      <hr />
       {<Grid islandSize={IslandSizes.Large} />}
     </div>
   )

@@ -10,19 +10,40 @@ function Cell (props) {
     harbour,
     canActivate,
     canDeactivate,
-    noneActivated
+    noneActivated,
+    allActivated,
+    dragging,
+    setDragging
   } = props
 
   const cellView = cellType
 
   const blocked = (!activated && !canActivate) || (activated && !canDeactivate)
   const click = blocked
-    ? {}
-    : {
-      onClick: e => {
+    ? {
+      onMouseUp: e => {
+        setDragging(false)
         e.preventDefault()
+      }
+    }
+    : {
+      onMouseDown: e => {
+        setDragging(true)
         if (activated) onDeactivate()
-        else onActivate()
+        else {
+          onActivate()
+        }
+        e.preventDefault()
+      },
+      onMouseOver: e => {
+        if (dragging) {
+          if (activated) onDeactivate()
+          else onActivate()
+        }
+      },
+      onMouseUp: e => {
+        setDragging(false)
+        e.preventDefault()
       }
     }
 
@@ -33,10 +54,13 @@ function Cell (props) {
         (blocked ? ' cell--blocked' : '') +
         (!canActivate ? ' cell--unactivatable' : '') +
         (cellType === CellTypes.Settlement ? ' cell--settlement' : '') +
-        (cellType !== CellTypes.Settlement && noneActivated
+        (cellType !== CellTypes.Settlement &&
+        cellType !== CellTypes.Lagoon &&
+        noneActivated
           ? ' cell--dim'
           : '') +
-        (harbour ? ' cell--harbour' : '')
+        (harbour ? ' cell--harbour' : '') +
+        (allActivated && !harbour && !activated ? ' cell--ocean' : '')
       }
       {...click}
     >
