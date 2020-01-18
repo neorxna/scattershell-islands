@@ -1,21 +1,46 @@
 .App {
-  margin: 4em;
   font-family: monospace;
-
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 table {
-  margin-left: 1em;
+  /*margin-left: 1em;*/
   padding: 1em;
-  font-size: 2em;
+  /*font-size: 2em;*/
   border-collapse: collapse;
   user-select: none;
+}
+
+.size-choice {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.size-picker {
+  user-select: none;
+}
+.size-choice a {
+  text-decoration: none;
+}
+.size-picker h2 {
+  display: inline;
+}
+
+@media only screen and (min-width: 768px) {
+  table {
+    font-size: 2em;
+  }
+  .table-container {
+    float: left;
+    margin-right: 1em;
+  }
 }
 
 .table-container {
   flex: 0;
 }
-
 
 table td {
   padding: .4em;
@@ -28,30 +53,6 @@ table td {
 
 .cell--ocean { color: #1081ff !important; background-color: #5ca9ff; }
 
-/*.harbour {
-  border-style: solid;
-  width: 0;
-  height: 0;
-  opacity: 1;
-  position: absolute;
-}
-
-.harbour-ur {
-  border-width: 0 1em 1em 0px;
-  border-color: transparent #5ba9ff transparent transparent;
-}
-.harbour-ul {
-  border-width: 1em 1em 0px 0px;
-  border-color: #5ba9ff transparent transparent transparent;
-}
-.harbour-dr {
-  border-width: 0px 0px 1em 1em;
-  border-color: transparent transparent #5ba9ff transparent;
-}
-.harbour-dl {
-  border-width: 1em 0em 0px 1em;
-  border-color: transparent transparent transparent #5ba9ff;
-}*/
 
 td.cell--activated {
   font-weight: bold;
@@ -85,47 +86,43 @@ td.cell--blocked {
 }
 
 .grid-container {
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 1em;
-}
-.game-container {
-  margin-bottom: 8em;
+  height: 100%;
+  overflow: hidden;
+  flex-direction: column;
 }
 
-.game-container>a{
-  margin-left: 2em;
-}
-
-.info {
+.restart {
+  margin-top: 1em;
+  font-size: 1.2em;
 }
 
 .grid-container h2 {
-  position: absolute;
-  left: 1em;
   padding: 0px;
   margin: 0px;
-  font-size: 2em;
+  font-size: 4em;
 }
 
 .info {
-padding: 0px;
-display: flex; 
-flex-direction: row;
+  flex: 1;
+  display: flex; 
+  flex-direction: column;
+  margin-bottom: 1em;
+  max-width: 420px;
 }
 
 .messages, .notes {
-  margin: 0px;
-  font-size: 1.4em;
+  padding: 0px;
+  font-size: 1.2em;
   list-style-type: none;
+  margin: 0px;
+  margin-top: 8px;
 }
 
-.messages li{
-  margin-bottom: 1em;
+.messages li {
+  margin-bottom: 8px;
 }
 
 .messages {
-  min-width: 16em;
   flex: 0;
 }
 
@@ -133,5 +130,7 @@ flex-direction: row;
   flex: 1;
   font-style: italic;
   color: #999;
+  column-count: 2;
+  column-fill: auto;
 }
 

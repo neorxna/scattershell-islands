@@ -18,4 +18,6 @@ const GridPositions = (grid, size) => {
   return { up, down, left, right, upright, downleft, upleft, downright }
 }
 
-export { GridPositions }
+const maxActiveTiles = size => size + Math.floor(size / 2)
+
+export { GridPositions, maxActiveTiles }

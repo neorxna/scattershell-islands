@@ -1,5 +1,5 @@
 import React from 'react'
-import { CellTypes } from './Properties'
+import { CellTypes, CellTypesLabel } from './Properties'
 
 function Cell (props) {
   const {
@@ -47,25 +47,41 @@ function Cell (props) {
       }
     }
 
+  const unactivatable = !canActivate
+  const settlementCell = cellType === CellTypes.Settlement
+  const dim =
+    cellType !== CellTypes.Settlement &&
+    cellType !== CellTypes.Lagoon &&
+    noneActivated
+  const ocean = allActivated && !harbour && !activated
+
   return (
     <td
       className={
         (activated ? 'cell--activated' : 'cell--unactivated') +
         (blocked ? ' cell--blocked' : '') +
-        (!canActivate ? ' cell--unactivatable' : '') +
-        (cellType === CellTypes.Settlement ? ' cell--settlement' : '') +
-        (cellType !== CellTypes.Settlement &&
-        cellType !== CellTypes.Lagoon &&
-        noneActivated
-          ? ' cell--dim'
-          : '') +
+        (unactivatable ? ' cell--unactivatable' : '') +
+        (settlementCell ? ' cell--settlement' : '') +
+        (dim ? ' cell--dim' : '') +
         (harbour ? ' cell--harbour' : '') +
-        (allActivated && !harbour && !activated ? ' cell--ocean' : '')
+        (ocean ? ' cell--ocean' : '')
       }
+      title={`${activated ? 'activated' : 'unactivated'} ${
+        CellTypesLabel[cellType]
+      }`}
+      aria-label={`${CellTypesLabel[cellType]}, ${
+        activated ? 'activated' : 'unactivated'
+      }.${harbour ? ' harbour.' : ''} can${blocked ? 'not' : ''} ${
+        activated ? 'de' : ''
+      }activate${
+        allActivated && !activated
+          ? ' (no tiles left).'
+          : blocked
+            ? ' (would create two islands).'
+            : '.'
+      }`}
       {...click}
     >
-      {harbour && <div className={`harbour harbour-${harbour}`} />}
-
       {cellView}
     </td>
   )

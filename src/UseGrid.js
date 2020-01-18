@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { CellTypes } from './Properties'
 import { generateGrid } from './GenerateGrid'
-import { GridPositions } from './Utils'
-import { ResourceTypes } from './scattershell-common/Resources'
+import { GridPositions, maxActiveTiles } from './Utils'
 
 const countActivated = grid =>
   grid.reduce((acc, cell) => acc + (cell.activated ? 1 : 0), 0)
@@ -60,7 +59,7 @@ function useGrid (size) {
     [[]]
   )
 
-  const maxActives = size + Math.floor(size / 2)
+  const maxActives = maxActiveTiles(size)
   const remainingActives = maxActives - countActivated(grid)
   const noneActivated = remainingActives === maxActives 
 
@@ -253,7 +252,7 @@ function useGrid (size) {
   })
 
   if (Object.entries(stuff).length > 0 && harbours > 0) {
-    notes.push(<br />)
+    notes.push('*')
   }
 
   for (let [thing, num] of Object.entries(stuff)) {
